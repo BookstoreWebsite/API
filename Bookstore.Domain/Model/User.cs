@@ -16,8 +16,12 @@ namespace Bookstore.Domain.Model
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public UserType Type { get; set; }
+        public string? ProfilePictureUrl { get; set; }
+        public string? ReaderBio { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        public ICollection<User> Following { get; set; } = new List<User>();
+        public ICollection<User> Followers { get; set; } = new List<User>();
 
     }
 }
