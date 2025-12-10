@@ -23,7 +23,7 @@ namespace Bookstore.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register([FromBody] UserDto request)
+        public async Task<ActionResult<User>> Register([FromBody] RegistrationDto request)
         {
             var user = await _authService.RegisterAsync(request);
             if (user is null)

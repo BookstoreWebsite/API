@@ -1,4 +1,5 @@
-﻿using Bookstore.Domain.Model;
+﻿using Bookstore.Application.DTO;
+using Bookstore.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,9 @@ namespace Bookstore.Application.IService
 {
     public interface IUserService
     {
-        Task<User> GetByIdAsync(Guid id);
+        Task<UserDto> GetByIdAsync(Guid id);
+        Task<List<UserDto>> GetAllAsync();
+        Task<bool> Follow(Guid followerId, Guid followingId);
+        Task<List<UserDto>> GetBySearchQueryAsync(string query);
     }
 }

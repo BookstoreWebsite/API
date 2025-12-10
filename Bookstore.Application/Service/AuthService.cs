@@ -46,9 +46,11 @@ namespace Bookstore.Application.Services
             };
         }
 
-        public async Task<User?> RegisterAsync(UserDto request)
+        public async Task<User?> RegisterAsync(RegistrationDto request)
         {
             var user = new User();
+
+
             var passwordHash = new PasswordHasher<User>()
                 .HashPassword(user, request.HashedPassword);
             user.Email = request.Email;

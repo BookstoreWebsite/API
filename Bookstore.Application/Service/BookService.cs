@@ -41,16 +41,42 @@ namespace Bookstore.Application.Service
             return true;
         }
 
-        public async Task<List<Book>> GetAllAsync()
+        public async Task<List<BookDto>> GetAllAsync()
         {
             var books = await _repository.GetAllAsync();
-            return books;
+
+            var bookDtos = new List<BookDto>();
+
+            foreach (var book in books)
+            {
+                var bookDto = new BookDto
+                {
+                    Title = book.Title,
+                    Description = book.Description,
+                    ImageUrl = book.ImageUrl,
+                    Author = book.Author,
+                    Rating = book.Rating
+                };
+
+                bookDtos.Add(bookDto);
+            }
+            return bookDtos;
         }
 
-        public async Task<Book> GetByIdAsync(Guid id)
+        public async Task<BookDto> GetByIdAsync(Guid id)
         {
             var book = await _repository.GetByIdAsync(id);
-            return book;
+
+            var bookDto = new BookDto
+            {
+                Title = book.Title,
+                Description = book.Description,
+                ImageUrl = book.ImageUrl,
+                Author = book.Author,
+                Rating = book.Rating
+            };
+
+            return bookDto;
         }
 
         public async Task<bool> UpdateAsync(Guid id, BookDto bookDto)

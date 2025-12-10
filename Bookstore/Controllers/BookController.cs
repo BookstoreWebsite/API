@@ -17,20 +17,19 @@ namespace Bookstore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Book>>> GetAll()
+        public async Task<ActionResult<List<BookDto>>> GetAll()
         {
-            var books = await _bookService.GetAllAsync();
-            Console.WriteLine("COUNT: " + books.Count);
-            return Ok(books);
+            var bookDtos = await _bookService.GetAllAsync();
+            return Ok(bookDtos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetById(Guid id) 
+        public async Task<ActionResult<BookDto>> GetById(Guid id) 
         {
-            var book = await _bookService.GetByIdAsync(id);
-            if(book != null) 
+            var bookDto = await _bookService.GetByIdAsync(id);
+            if(bookDto != null) 
             {
-                return Ok(book);
+                return Ok(bookDto);
             }
 
             return NotFound(new {message = "Book not found!" });

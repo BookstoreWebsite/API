@@ -10,8 +10,8 @@ namespace Bookstore.Application.IService
 {
     public interface IBookService
     {
-        Task<List<Book>> GetAllAsync();
-        Task<Book> GetByIdAsync(Guid id);
+        Task<List<BookDto>> GetAllAsync();
+        Task<BookDto> GetByIdAsync(Guid id);
         Task<bool> CreateAsync(BookDto bookDto);
         Task<bool> UpdateAsync(Guid id, BookDto bookDto);
         Task<bool> DeleteAsync(Guid id);
