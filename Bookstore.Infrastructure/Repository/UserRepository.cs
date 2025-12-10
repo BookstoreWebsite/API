@@ -66,5 +66,14 @@ namespace Bookstore.Infrastructure.Repository
                 .ToListAsync();
             return following;
         }
+
+        public async Task<List<User>> GetFollowersAsync(Guid id)
+        {
+            var followers = await _context.Users
+                .Where(u => u.Id == id)
+                .SelectMany(u => u.Followers)
+                .ToListAsync();
+            return followers;
+        }
     }
 }

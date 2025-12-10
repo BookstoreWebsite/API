@@ -14,5 +14,6 @@ namespace Bookstore.Domain.IRepositories
         Task Follow(Guid followerId, Guid followingId);
         Task<List<User>> GetBySearchQueryAsync(string query);
         Task<List<User>> GetFollowingAsync(Guid id);
+        Task<List<User>> GetFollowersAsync(Guid id);
     }
 }

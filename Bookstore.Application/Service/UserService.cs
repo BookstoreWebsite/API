@@ -23,7 +23,9 @@ namespace Bookstore.Application.Service
         {
             var user = await _repository.GetByIdAsync(id);
             var following = await _repository.GetFollowingAsync(id);
-            var followingIds = convertFollowingList(following);
+            var followers = await _repository.GetFollowersAsync(id);
+            var followingIds = convertFollowLists(following);
+            var followerIds = convertFollowLists(followers);
 
             var userDto = new UserDto
             {
@@ -36,7 +38,8 @@ namespace Bookstore.Application.Service
                 Type = user.Type,
                 ProfilePictureUrl = user.ProfilePictureUrl,
                 ReaderBio = user.ReaderBio,
-                FollowingIds = followingIds
+                FollowingIds = followingIds,
+                FollowerIds = followerIds
             };
 
             return userDto;
@@ -91,11 +94,11 @@ namespace Bookstore.Application.Service
             return userDtos;
         }
 
-        private List<Guid> convertFollowingList(ICollection<User> following) 
+        private List<Guid> convertFollowLists(ICollection<User> followList) 
         {
             var ids = new List<Guid>();
 
-            foreach (var user in following) 
+            foreach (var user in followList) 
             {
                 ids.Add(user.Id);
             }

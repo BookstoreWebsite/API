@@ -18,5 +18,6 @@ namespace Bookstore.Application.DTO
         public string? ProfilePictureUrl { get; set; }
         public string? ReaderBio { get; set; }
         public List<Guid>? FollowingIds { get; set; }
+        public List<Guid>? FollowerIds { get; set; }
     }
 }
