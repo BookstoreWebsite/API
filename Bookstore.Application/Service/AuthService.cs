@@ -46,21 +46,34 @@ namespace Bookstore.Application.Services
             };
         }
 
-        public async Task<User?> RegisterAsync(RegistrationDto request)
+        public async Task<bool> RegisterAsync(RegistrationDto request)
         {
-            var user = new User();
-
+            var user = new User
+            {
+                Id = Guid.NewGuid(),               
+                Email = request.Email,
+                Username = request.Username,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber,
+                Type = UserType.Reader
+            };
 
             var passwordHash = new PasswordHasher<User>()
-                .HashPassword(user, request.HashedPassword);
-            user.Email = request.Email;
-            user.Username = request.Username;
+                .HashPassword(user, request.Password); 
+
             user.HashedPassword = passwordHash;
-            user.FirstName = request.FirstName;
-            user.LastName = request.LastName;
-            user.PhoneNumber = request.PhoneNumber;
-            user.Type = UserType.Reader;
-            return await _authRepository.RegisterAsync(user);
+
+            var shoppingCart = new ShoppingCart
+            {
+                UserId = user.Id,                  
+                User = user
+            };
+
+            user.ShoppingCart = shoppingCart;
+
+            await _authRepository.RegisterAsync(user);
+            return true;
         }
     }
 }

@@ -19,5 +19,7 @@ namespace Bookstore.Application.DTO
         public string? ReaderBio { get; set; }
         public List<Guid>? FollowingIds { get; set; }
         public List<Guid>? FollowerIds { get; set; }
+        public int? wishedBooksCount { get; set; }
+        public int? readBooksCount { get; set; }
     }
 }

@@ -22,8 +22,8 @@ namespace Bookstore.Application.Service
         public async Task<UserDto> GetByIdAsync(Guid id) 
         {
             var user = await _repository.GetByIdAsync(id);
-            var following = await _repository.GetFollowingAsync(id);
-            var followers = await _repository.GetFollowersAsync(id);
+            var following = user.Following.ToList();
+            var followers = user.Followers.ToList();
             var followingIds = convertFollowLists(following);
             var followerIds = convertFollowLists(followers);
 
@@ -39,7 +39,9 @@ namespace Bookstore.Application.Service
                 ProfilePictureUrl = user.ProfilePictureUrl,
                 ReaderBio = user.ReaderBio,
                 FollowingIds = followingIds,
-                FollowerIds = followerIds
+                FollowerIds = followerIds,
+                wishedBooksCount = user.Wished.Count,
+                readBooksCount = user.Read.Count
             };
 
             return userDto;

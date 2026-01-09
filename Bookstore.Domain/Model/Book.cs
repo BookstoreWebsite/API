@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Domain.Model
 {
-    public class Book
+    public class Book : Product
     {
-        public Guid Id { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
         public string Author { get; set; }
-        public string ImageUrl { get; set; }
         public double? Rating { get; set; }
-
+        public ICollection<Genre> Genres { get; set; } = new List<Genre>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<User> WishedBy { get; set; } = new List<User>();
+        public ICollection<User> ReadBy { get; set; } = new List<User>();
     }
 }

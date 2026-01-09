@@ -10,7 +10,7 @@ namespace Bookstore.Application.IService
 {
     public interface IAuthService
     {
-        Task<User?> RegisterAsync(RegistrationDto request);
+        Task<bool> RegisterAsync(RegistrationDto request);
         Task<TokenResponseDto?> LoginAsync(LoginUserDto request);
         Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request);
     }

@@ -22,7 +22,12 @@ namespace Bookstore.Infrastructure.Repository
 
         public async Task<User> GetByIdAsync(Guid id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                .Include(u => u.Following)
+                .Include(u => u.Followers)
+                .Include(u => u.Wished)
+                .Include(u => u.Read)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<List<User>> GetAllAsync() 

@@ -20,8 +20,14 @@ namespace Bookstore.Domain.Model
         public string? ReaderBio { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
+        public ShoppingCart ShoppingCart { get; set; }
         public ICollection<User> Following { get; set; } = new List<User>();
         public ICollection<User> Followers { get; set; } = new List<User>();
-
+        public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<Report> Reports { get; set; } = new List<Report>();
+        public ICollection<Book> Wished { get; set; } = new List<Book>();
+        public ICollection<Book> Read { get; set; } = new List<Book>();
     }
 }

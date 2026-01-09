@@ -15,27 +15,27 @@ namespace Bookstore.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly IAuthService _service;
 
         public AuthController(IAuthService authService)
         {
-            _authService = authService;
+            _service = authService;
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register([FromBody] RegistrationDto request)
         {
-            var user = await _authService.RegisterAsync(request);
-            if (user is null)
-                return BadRequest("Username already exists");
+            var result = await _service.RegisterAsync(request);
+            if (!result)
+                return BadRequest();
 
-            return Ok(user);
+            return Ok(new { message = "Registration successful!" });
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<TokenResponseDto>> Login([FromBody] LoginUserDto  request)
         {
-            var result = await _authService.LoginAsync(request);
+            var result = await _service.LoginAsync(request);
             if (result is null)
                 return BadRequest("Invalid username or password");
 
@@ -45,7 +45,7 @@ namespace Bookstore.API.Controllers
         [HttpPost("refresh-token")]
         public async Task<ActionResult<TokenResponseDto>> RefreshToken(RefreshTokenRequestDto request)
         {
-            var result = await _authService.RefreshTokensAsync(request);
+            var result = await _service.RefreshTokensAsync(request);
             if (result is null || result.AccessToken is null || result.RefreshToken is null)
                 return Unauthorized("Invalid refresh token");
             return Ok(result);
