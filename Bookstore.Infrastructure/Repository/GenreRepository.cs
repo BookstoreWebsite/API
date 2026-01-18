@@ -49,5 +49,17 @@ namespace Bookstore.Infrastructure.Repository
             _context.Genres.Update(genre);
             await _context.SaveChangesAsync();
         }
+        public async Task AddGenresToFavoritesAsync(Guid readerId, List<Genre> genres) 
+        {
+            var user = await _context.Users
+                .Include(u => u.FavoriteGenres)
+                .FirstOrDefaultAsync(u => u.Id == readerId);
+
+            foreach (var genre in genres) 
+            {
+                user.FavoriteGenres.Add(genre);
+            }
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace Bookstore.Infrastructure.Repository
                 .Include(u => u.Followers)
                 .Include(u => u.Wished)
                 .Include(u => u.Read)
+                .Include(u => u.FavoriteGenres)
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -41,6 +42,15 @@ namespace Bookstore.Infrastructure.Repository
             var targetUser = await GetByIdAsync(followingId);
 
             user.Following.Add(targetUser);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Unfollow(Guid followerId, Guid followingId)
+        {
+            var user = await GetByIdAsync(followerId);
+            var targetUser = await GetByIdAsync(followingId);
+
+            user.Following.Remove(targetUser);
             await _context.SaveChangesAsync();
         }
 

@@ -50,6 +50,17 @@ namespace Bookstore.Infrastructure.Repository
             return user;
         }
 
+        public async Task CreateWorkerAsync(User user)
+        {
+            if (await context.Users.AnyAsync(u => u.Email == user.Email))
+            {
+                return;
+            }
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+        }
+
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];

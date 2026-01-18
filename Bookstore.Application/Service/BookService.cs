@@ -34,7 +34,9 @@ namespace Bookstore.Application.Service
                 Description = bookDto.Description,
                 ImageUrl = bookDto.ImageUrl,
                 Author = bookDto.Author,
+                Amount = (int)bookDto.Amount,
                 Rating = null,
+                AddTime = DateTime.UtcNow
             };
 
             await _repository.CreateAsync(newBook, genreIds, bookDto.Price);
@@ -65,7 +67,9 @@ namespace Bookstore.Application.Service
                     ImageUrl = book.ImageUrl,
                     Author = book.Author,
                     Rating = book.Rating,
+                    Amount = (int)book.Amount,
                     Price = priceListEntry.Price,
+                    AddTime = book.AddTime
                 };
 
                 bookDtos.Add(bookDto);
@@ -86,13 +90,14 @@ namespace Bookstore.Application.Service
                 ImageUrl = book.ImageUrl,
                 Author = book.Author,
                 Rating = book.Rating,
+                Amount = (int)book.Amount,
                 Price = priceListEntry.Price
             };
 
             return bookDto;
         }
 
-        public async Task<bool> UpdateAsync(Guid id, BookDto bookDto)
+        public async Task<bool> UpdateAsync(Guid id, BookDto bookDto, List<Guid> genreIds)
         {
             var oldBook = await _repository.GetByIdAsync(id);
 
@@ -101,13 +106,14 @@ namespace Bookstore.Application.Service
             oldBook.Author = bookDto.Author;
             oldBook.ImageUrl = bookDto.ImageUrl;
             oldBook.Rating = bookDto.Rating;
+            oldBook.Amount = (int)bookDto.Amount;
 
             if(bookDto.Price != null) 
             {
                 await _productRepository.AddNewPriceListEntryAsync(id, (decimal)bookDto.Price);
             }
 
-            await _repository.UpdateAsync(oldBook);
+            await _repository.UpdateAsync(oldBook, genreIds);
             return true;
         }
 
@@ -127,6 +133,7 @@ namespace Bookstore.Application.Service
                     ImageUrl = book.ImageUrl,
                     Author = book.Author,
                     Rating = book.Rating,
+                    Amount = book.Amount,
                     Price = priceListEntry.Price
                 };
 
@@ -301,6 +308,18 @@ namespace Bookstore.Application.Service
             return true;
         }
 
+        public async Task<bool> RemoveFromReadAsync(Guid readerId, Guid bookId)
+        {
+            await _repository.RemoveFromReadAsync(readerId, bookId);
+            return true;
+        }
+
+        public async Task<bool> RemoveFromWishedAsync(Guid readerId, Guid bookId)
+        {
+            await _repository.RemoveFromWishedAsync(readerId, bookId);
+            return true;
+        }
+
         public async Task<List<BookDto>> GetAllWishedAsync(Guid readerId) 
         {
             var wished = await _repository.GetAllWishedAsync(readerId);
@@ -334,6 +353,44 @@ namespace Bookstore.Application.Service
             var bookDtos = new List<BookDto>();
 
             foreach (var book in read)
+            {
+                var priceListEntry = await _productRepository.GetCurrentPriceListEntryAsync(book.Id);
+
+                var bookDto = new BookDto
+                {
+                    Id = book.Id,
+                    Name = book.Name,
+                    Description = book.Description,
+                    ImageUrl = book.ImageUrl,
+                    Author = book.Author,
+                    Rating = book.Rating,
+                    Price = priceListEntry.Price,
+                };
+
+                bookDtos.Add(bookDto);
+            }
+            return bookDtos;
+        }
+
+        public async Task<bool> IsInReadAsync(Guid readerId, Guid bookId)
+        {
+            var read = await _repository.GetAllReadAsync(readerId);
+            return read.Any(b => b.Id == bookId);
+        }
+
+
+        public async Task<bool> IsInWishedAsync(Guid readerId, Guid bookId)
+        {
+            var wished = await _repository.GetAllWishedAsync(readerId);
+            return wished.Any(b => b.Id == bookId);
+        }
+
+        public async Task<List<BookDto>> GetRecommendedBooksAsync(Guid readerId) 
+        {
+            var bookDtos = new List<BookDto>();
+            var recommended = await _repository.GetRecommendedBooksAsync(readerId);
+
+            foreach (var book in recommended)
             {
                 var priceListEntry = await _productRepository.GetCurrentPriceListEntryAsync(book.Id);
 

@@ -12,7 +12,7 @@ namespace Bookstore.Domain.IRepositories
         Task<List<Book>> GetAllAsync();
         Task<Book> GetByIdAsync(Guid id);
         Task CreateAsync(Book book, List<Guid> genreIds, decimal? price);
-        Task UpdateAsync(Book book);
+        Task UpdateAsync(Book book, List<Guid> genreIds);
         Task DeleteAsync(Guid bookId);
         Task<List<Book>> GetAllGenreBooksAsync(Guid genreId);
         Task CreateReviewAsync(Review review);
@@ -26,7 +26,10 @@ namespace Bookstore.Domain.IRepositories
         Task<List<Report>> GetAllReportsAsync();
         Task AddToWishedAsync(Guid readerId, Guid bookId);
         Task AddToReadAsync(Guid readerId, Guid bookId);
+        Task RemoveFromWishedAsync(Guid readerId, Guid bookId);
+        Task RemoveFromReadAsync(Guid readerId, Guid bookId);
         Task<List<Book>> GetAllWishedAsync(Guid readerId);
         Task<List<Book>> GetAllReadAsync(Guid readerId);
+        Task<List<Book>> GetRecommendedBooksAsync(Guid readerId);
     }
 }

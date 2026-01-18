@@ -40,7 +40,7 @@ namespace Bookstore.API.Controllers
             return Ok(userDtos);
         }
 
-        [HttpPost("{followerId}/{followingId}/follow")]
+        [HttpPost("follow/{followerId}/{followingId}")]
         public async Task<IActionResult> Follow( Guid followerId, Guid followingId) 
         {
             var result = await _service.Follow(followerId, followingId);
@@ -50,6 +50,32 @@ namespace Bookstore.API.Controllers
                 return BadRequest();
             }
             return Ok(new { message = "User successfully followed!" });
+        }
+
+        [HttpDelete("unfollow/{followerId}/{followingId}")]
+        public async Task<IActionResult> Unfollow(Guid followerId, Guid followingId)
+        {
+            var result = await _service.Unfollow(followerId, followingId);
+
+            if (!result)
+            {
+                return BadRequest();
+            }
+            return Ok(new { message = "User successfully unfollowed!" });
+        }
+
+        [HttpGet("getFollowing/{id}")]
+        public async Task<ActionResult<List<FollowDto>>> GetFollowing(Guid id) 
+        {
+            var result = await _service.GetFollowingAsync(id);
+            return Ok(result);
+        }
+
+        [HttpGet("getFollowers/{id}")]
+        public async Task<ActionResult<List<FollowDto>>> GetFollowers(Guid id)
+        {
+            var result = await _service.GetFollowersAsync(id);
+            return Ok(result);  
         }
     }
 }

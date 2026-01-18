@@ -14,5 +14,6 @@ namespace Bookstore.Application.IService
         Task<bool> CreateAsync(GenreFormsDto genreDto);
         Task<bool> UpdateAsync(Guid id, GenreFormsDto genreDto);
         Task<bool> DeleteAsync(Guid id);
+        Task<bool> AddGenresToFavoritesAsync(Guid readerId, List<Guid> genreIds);
     }
 }

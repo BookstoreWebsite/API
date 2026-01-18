@@ -74,8 +74,9 @@ namespace Bookstore.Infrastructure.Data
                 entity.ToTable("Products");
 
                 entity.Property(p => p.Name).IsRequired().HasMaxLength(100);
-                entity.Property(p => p.Description).IsRequired().HasMaxLength(255);
+                entity.Property(p => p.Description).IsRequired().HasMaxLength(1000);
                 entity.Property(p => p.ImageUrl).IsRequired();
+                entity.Property(p => p.Amount).IsRequired();
 
                 entity.HasDiscriminator<string>("ProductType")
                       .HasValue<Book>("Book");
@@ -85,6 +86,7 @@ namespace Bookstore.Infrastructure.Data
             {
                 entity.Property(b => b.Author).IsRequired().HasMaxLength(100);
                 entity.Property(b => b.Rating);
+                entity.Property(b => b.AddTime);
             });
 
             modelBuilder.Entity<PriceListEntry>(entity =>
@@ -182,6 +184,27 @@ namespace Bookstore.Infrastructure.Data
                     }
                 );
 
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.FavoriteGenres)
+                .WithMany(g => g.FavoritedBy)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserFavoriteGenres",
+                    j => j
+                        .HasOne<Genre>()
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j => j
+                        .HasOne<User>()
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("UserId", "GenreId");
+                        j.ToTable("UserFavoriteGenres");
+                    }
+                );
 
             modelBuilder.Entity<ShoppingCart>(entity =>
             {
@@ -381,8 +404,6 @@ namespace Bookstore.Infrastructure.Data
                 entity.HasIndex(r => r.ReviewId);
                 entity.HasIndex(r => r.CommentId);
             });
-
-
         }
     }
 }

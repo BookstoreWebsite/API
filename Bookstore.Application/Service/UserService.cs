@@ -24,8 +24,9 @@ namespace Bookstore.Application.Service
             var user = await _repository.GetByIdAsync(id);
             var following = user.Following.ToList();
             var followers = user.Followers.ToList();
-            var followingIds = convertFollowLists(following);
-            var followerIds = convertFollowLists(followers);
+            var followingIds = ConvertFollowLists(following);
+            var followerIds = ConvertFollowLists(followers);
+            var genreDtos = ConvertGenresToDtos(user.FavoriteGenres);
 
             var userDto = new UserDto
             {
@@ -40,8 +41,9 @@ namespace Bookstore.Application.Service
                 ReaderBio = user.ReaderBio,
                 FollowingIds = followingIds,
                 FollowerIds = followerIds,
-                wishedBooksCount = user.Wished.Count,
-                readBooksCount = user.Read.Count
+                WishedBooksCount = user.Wished.Count,
+                ReadBooksCount = user.Read.Count,
+                FavoriteGenres = genreDtos
             };
 
             return userDto;
@@ -51,7 +53,7 @@ namespace Bookstore.Application.Service
         {
             var users = await _repository.GetAllAsync();
 
-            var userDtos = convertToDto(users);
+            var userDtos = ConvertToDto(users);
 
             return userDtos;
         }
@@ -63,16 +65,22 @@ namespace Bookstore.Application.Service
             return true;
         }
 
+        public async Task<bool> Unfollow(Guid followerId, Guid followingId)
+        {
+            await _repository.Follow(followerId, followingId);
+            return true;
+        }
+
         public async Task<List<UserDto>> GetBySearchQueryAsync(string query) 
         {
             var users = await _repository.GetBySearchQueryAsync(query);
-            var userDtos = convertToDto(users);
+            var userDtos = ConvertToDto(users);
 
             return userDtos;
 
         }
 
-        private List<UserDto> convertToDto(List<User> users) 
+        private List<UserDto> ConvertToDto(List<User> users) 
         {
             var userDtos = new List<UserDto>();
             foreach (var user in users)
@@ -96,7 +104,7 @@ namespace Bookstore.Application.Service
             return userDtos;
         }
 
-        private List<Guid> convertFollowLists(ICollection<User> followList) 
+        private List<Guid> ConvertFollowLists(ICollection<User> followList) 
         {
             var ids = new List<Guid>();
 
@@ -106,6 +114,65 @@ namespace Bookstore.Application.Service
             }
 
             return ids;
+        }
+
+        public async Task<List<FollowDto>> GetFollowingAsync(Guid id) 
+        {
+            var following = await _repository.GetFollowingAsync(id);
+            var followingDto = new List<FollowDto>();
+
+            foreach(var follow in following) 
+            {
+                var followDto = new FollowDto 
+                {
+                    Id = follow.Id,
+                    Username = follow.Username,
+                    FirstName = follow.FirstName,
+                    LastName = follow.LastName,
+                    ProfilePicture = follow.ProfilePictureUrl
+                };
+
+                followingDto.Add(followDto);
+            }
+
+            return followingDto;
+        }
+
+        public async Task<List<FollowDto>> GetFollowersAsync(Guid id)
+        {
+            var followers = await _repository.GetFollowersAsync(id);
+            var followersDto = new List<FollowDto>();
+
+            foreach (var follow in followers)
+            {
+                var followDto = new FollowDto
+                {
+                    Id = follow.Id,
+                    Username = follow.Username,
+                    FirstName = follow.FirstName,
+                    LastName = follow.LastName,
+                    ProfilePicture = follow.ProfilePictureUrl
+                };
+
+                followersDto.Add(followDto);
+            }
+
+            return followersDto;
+        }
+
+        private List<GenreDto> ConvertGenresToDtos(ICollection<Genre> genres) 
+        {
+            var dtos = new List<GenreDto>();
+            foreach (var genre in genres) 
+            {
+                var dto = new GenreDto
+                {
+                    Id = genre.Id,
+                    Name = genre.Name
+                };
+                dtos.Add(dto);
+            }
+            return dtos;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bookstore.Application.DTO
 {
-    public class CreateBookRequestDto
+    public class BookFormDto
     {
         public BookDto bookDto { get; set; }
         public List<Guid> genreIds { get; set; }

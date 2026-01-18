@@ -12,5 +12,6 @@ namespace Bookstore.Domain.IRepositories
         Task<User?> RegisterAsync(User request);
         Task<(Guid, string, string)?> LoginAsync(string email, string password);
         Task<(string, string)?> RefreshTokensAsync(Guid userId, string refreshToken);
+        Task CreateWorkerAsync(User worker);
     }
 }

@@ -29,5 +29,6 @@ namespace Bookstore.Domain.Model
         public ICollection<Report> Reports { get; set; } = new List<Report>();
         public ICollection<Book> Wished { get; set; } = new List<Book>();
         public ICollection<Book> Read { get; set; } = new List<Book>();
+        public ICollection<Genre> FavoriteGenres { get; set; } = new List<Genre>(); 
     }
 }

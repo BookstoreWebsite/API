@@ -32,6 +32,16 @@ namespace Bookstore.API.Controllers
             return Ok(new { message = "Registration successful!" });
         }
 
+        [HttpPost("createWorker")]
+        public async Task<IActionResult> CreateWorker([FromBody] RegistrationDto registrationDto) 
+        {
+            var result = await _service.CreateWorkerAsync(registrationDto);
+            if (!result)
+                return BadRequest();
+
+            return Ok(new { message = "Worker added successfully!" });
+        }
+
         [HttpPost("login")]
         public async Task<ActionResult<TokenResponseDto>> Login([FromBody] LoginUserDto  request)
         {

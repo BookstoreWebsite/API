@@ -75,5 +75,26 @@ namespace Bookstore.Application.Services
             await _authRepository.RegisterAsync(user);
             return true;
         }
+
+        public async Task<bool> CreateWorkerAsync(RegistrationDto registrationDto) 
+        {
+            var user = new User
+            {
+                Id = Guid.NewGuid(),
+                Email = registrationDto.Email,
+                Username = registrationDto.Username,
+                FirstName = registrationDto.FirstName,
+                LastName = registrationDto.LastName,
+                PhoneNumber = registrationDto.PhoneNumber,
+                Type = UserType.Worker
+            };
+            var passwordHash = new PasswordHasher<User>()
+                .HashPassword(user, registrationDto.Password);
+
+            user.HashedPassword = passwordHash;
+
+            await _authRepository.CreateWorkerAsync(user);
+            return true;
+        }
     }
 }

@@ -71,5 +71,18 @@ namespace Bookstore.API.Controllers
 
             return Ok(new { message = "Genre successfully deleted!" });
         }
+
+        [HttpPost("addGenresToFavorites/{readerId}")]
+        public async Task<IActionResult> AddGenresToFavorites(Guid readerId, List<Guid> genreIds) 
+        {
+            var result = await _service.AddGenresToFavoritesAsync(readerId, genreIds);
+
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            return Ok(new { message = "Genre successfully added to favorites!" });
+        }
     }
 }

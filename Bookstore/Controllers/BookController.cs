@@ -37,9 +37,9 @@ namespace Bookstore.API.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody]CreateBookRequestDto requestDto) 
+        public async Task<IActionResult> Create([FromBody]BookFormDto formDto) 
         {
-            var result = await _service.CreateAsync(requestDto.bookDto, requestDto.genreIds);
+            var result = await _service.CreateAsync(formDto.bookDto, formDto.genreIds);
 
             if (!result) 
             {
@@ -49,9 +49,9 @@ namespace Bookstore.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody]BookDto bookDto) 
+        public async Task<IActionResult> Update(Guid id, [FromBody]BookFormDto formDto) 
         {
-            var result = await _service.UpdateAsync(id, bookDto);
+            var result = await _service.UpdateAsync(id, formDto.bookDto, formDto.genreIds);
 
             if (!result) 
             {
@@ -168,6 +168,28 @@ namespace Bookstore.API.Controllers
             return Ok(new { message = "Book successully added!" });
         }
 
+        [HttpDelete("removeBookFromRead/{readerId}/{bookId}")]
+        public async Task<IActionResult> RemoveBookFromRead(Guid readerId, Guid bookId)
+        {
+            var result = await _service.RemoveFromReadAsync(readerId, bookId);
+            if (!result)
+            {
+                return BadRequest();
+            }
+            return Ok(new { message = "Book successully removed!" });
+        }
+
+        [HttpDelete("removeBookFromWished/{readerId}/{bookId}")]
+        public async Task<IActionResult> RemoveBookFromWished(Guid readerId, Guid bookId)
+        {
+            var result = await _service.RemoveFromWishedAsync(readerId, bookId);
+            if (!result)
+            {
+                return BadRequest();
+            }
+            return Ok(new { message = "Book successully removed!" });
+        }
+
         [HttpPost("addBookToRead/{readerId}/{bookId}")]
         public async Task<IActionResult> AddToRead(Guid readerId, Guid bookId)
         {
@@ -180,17 +202,39 @@ namespace Bookstore.API.Controllers
         }
 
         [HttpGet("getAllWished/{readerId}")]
-        public async Task<ActionResult<BookDto>> GetAllWished(Guid readerId) 
+        public async Task<ActionResult<List<BookDto>>> GetAllWished(Guid readerId) 
         {
             var bookDtos = await _service.GetAllWishedAsync(readerId);
             return Ok(bookDtos);
         }
 
         [HttpGet("getAllRead/{readerId}")]
-        public async Task<ActionResult<BookDto>> GetAllRead(Guid readerId)
+        public async Task<ActionResult<List<BookDto>>> GetAllRead(Guid readerId)
         {
             var bookDtos = await _service.GetAllReadAsync(readerId);
             return Ok(bookDtos);
         }
+
+        [HttpGet("isBookInRead/{readerId}/{bookId}")]
+        public async Task<ActionResult<bool>> IsInRead(Guid readerId, Guid bookId)
+        {
+            var result = await _service.IsInReadAsync(readerId, bookId);
+            return Ok(result);
+        }
+
+        [HttpGet("isBookInWished/{readerId}/{bookId}")]
+        public async Task<ActionResult<bool>> IsInWished(Guid readerId, Guid bookId)
+        {
+            var result = await _service.IsInWishedAsync(readerId, bookId);
+            return Ok(result);
+        }
+
+        [HttpGet("getRecommendedBooks/{readerId}")]
+        public async Task<ActionResult<List<BookDto>>> GetRecommendedBooks(Guid readerId) 
+        {
+            var bookDtos = await _service.GetRecommendedBooksAsync(readerId);
+            return Ok(bookDtos);
+        }
+
     }
 }

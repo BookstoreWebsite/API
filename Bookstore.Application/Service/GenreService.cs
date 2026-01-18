@@ -77,5 +77,17 @@ namespace Bookstore.Application.Service
             await _repository.UpdateAsync(oldGenre);
             return true;
         }
+
+        public async Task<bool> AddGenresToFavoritesAsync(Guid readerId, List<Guid> genreIds) 
+        {
+            var genres = new List<Genre>();
+            foreach(var id in genreIds) 
+            {
+                var genre = await _repository.GetByIdAsync(id);
+                genres.Add(genre);
+            }
+            await _repository.AddGenresToFavoritesAsync(readerId, genres);
+            return true;
+        }
     }
 }

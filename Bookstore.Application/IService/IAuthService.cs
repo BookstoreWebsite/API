@@ -13,5 +13,6 @@ namespace Bookstore.Application.IService
         Task<bool> RegisterAsync(RegistrationDto request);
         Task<TokenResponseDto?> LoginAsync(LoginUserDto request);
         Task<TokenResponseDto?> RefreshTokensAsync(RefreshTokenRequestDto request);
+        Task<bool> CreateWorkerAsync(RegistrationDto registrationDto);
     }
 }

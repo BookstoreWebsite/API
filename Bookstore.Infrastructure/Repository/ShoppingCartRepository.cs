@@ -66,11 +66,11 @@ namespace Bookstore.Infrastructure.Repository
 
         public async Task<List<CartItem>> GetAllCartItemsAsync(Guid shoppingCartUserId)
         {
-            var cartItems = await _context.CartItems.Where(ci => ci.ShoppingCartUserId == shoppingCartUserId).ToListAsync();
-            foreach (var cartItem in cartItems) 
-            {
-                cartItem.Product = await GetByProductIdAsync(cartItem.ProductId);
-            }
+            var cartItems = await _context.CartItems
+                .Include(ci => ci.Product)
+                .Where(ci => ci.ShoppingCartUserId == shoppingCartUserId)
+                .ToListAsync();
+
             return cartItems;
         }
 
@@ -112,6 +112,8 @@ namespace Bookstore.Infrastructure.Repository
                     Quantity = ci.Quantity,
                     UnitPrice = ci.UnitPrice
                 });
+
+                ci.Product.Amount = ci.Product.Amount - ci.Quantity;
             }
 
             purchase.TotalPrice = totalPrice;

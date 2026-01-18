@@ -16,5 +16,7 @@ namespace Bookstore.Application.DTO
         public string? ImageUrl { get; set; }
         public double? Rating { get; set; }
         public decimal? Price { get; set; }
+        public int? Amount { get; set; }
+        public DateTime? AddTime { get; set; }
     }
 }

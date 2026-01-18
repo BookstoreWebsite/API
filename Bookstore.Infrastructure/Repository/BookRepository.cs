@@ -64,11 +64,21 @@ namespace Bookstore.Infrastructure.Repository
 
         public async Task<Book> GetByIdAsync(Guid id)
         {
-            return await _context.Books.FindAsync(id);
+            return await _context.Books.Include(b => b.Genres).FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task UpdateAsync(Book book)
+        public async Task UpdateAsync(Book book, List<Guid> genreIds)
         {
+            var genres = await _context.Genres
+                    .Where(g => genreIds.Contains(g.Id))
+                    .ToListAsync();
+
+            book.Genres.Clear();
+            foreach (var genre in genres)
+            {
+                book.Genres.Add(genre);
+            }
+
             _context.Books.Update(book);
             await _context.SaveChangesAsync();
         }
@@ -76,6 +86,7 @@ namespace Bookstore.Infrastructure.Repository
         public async Task<List<Book>> GetAllGenreBooksAsync(Guid genreId) 
         {
             return await _context.Books
+                .Include(b => b.Reviews)
                 .Where(b => b.Genres.Any(g => g.Id == genreId))
                 .ToListAsync();
         }
@@ -179,6 +190,24 @@ namespace Bookstore.Infrastructure.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task RemoveFromReadAsync(Guid readerId, Guid bookId)
+        {
+            var book = await GetByIdAsync(bookId);
+            var user = await _userRepository.GetByIdAsync(readerId);
+
+            user.Read.Remove(book);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveFromWishedAsync(Guid readerId, Guid bookId)
+        {
+            var book = await GetByIdAsync(bookId);
+            var user = await _userRepository.GetByIdAsync(readerId);
+
+            user.Wished.Remove(book);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<List<Book>> GetAllWishedAsync(Guid readerId)
         {
             var user = await _context.Users
@@ -201,6 +230,30 @@ namespace Bookstore.Infrastructure.Repository
                 return new List<Book>();
 
             return user.Read.ToList();
+        }
+
+        public async Task<List<Book>> GetRecommendedBooksAsync(Guid readerId) 
+        {
+            var user = await _userRepository.GetByIdAsync(readerId);
+            var favoriteGenreBooks = new List<Book>();
+
+            foreach (var genre in user.FavoriteGenres) 
+            {
+                var genreBooks = await GetAllGenreBooksAsync(genre.Id);
+                favoriteGenreBooks.AddRange(genreBooks);
+            }
+
+            var recommendedBooks = favoriteGenreBooks
+                .Where(b => b.Rating != null && b.Reviews.Count != 0)
+                .GroupBy(b => b.Id).Select(g => g.First())
+                .OrderByDescending(b => b.Rating)
+                .ThenByDescending(b => b.Reviews.Count)
+                .Take(5)
+                .ToList();
+
+
+            return recommendedBooks;
+
         }
 
     }

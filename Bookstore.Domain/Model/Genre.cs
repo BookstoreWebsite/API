@@ -11,5 +11,6 @@ namespace Bookstore.Domain.Model
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Book>? Books { get; set; } = new List<Book>();
+        public ICollection<User> FavoritedBy { get; set; } = new List<User>();
     }
 }

@@ -13,7 +13,7 @@ namespace Bookstore.Application.IService
         Task<List<BookDto>> GetAllAsync();
         Task<BookDto> GetByIdAsync(Guid bookId);
         Task<bool> CreateAsync(BookDto bookDto, List<Guid> genreIds);
-        Task<bool> UpdateAsync(Guid bookId, BookDto bookDto);
+        Task<bool> UpdateAsync(Guid bookId, BookDto bookDto, List<Guid> genreIds);
         Task<bool> DeleteAsync(Guid bookId);
         Task<List<BookDto>> GetAllGenreBooksAsync(Guid bookId);
         Task<List<ReviewDto>> GetAllBookReviewsAsync(Guid bookId);
@@ -26,7 +26,12 @@ namespace Bookstore.Application.IService
         Task<List<ReportDto>> GetAllReportsAsync();
         Task<bool> AddToWishedAsync(Guid readerId, Guid bookId);
         Task<bool> AddToReadAsync(Guid readerId, Guid bookId);
+        Task<bool> RemoveFromWishedAsync(Guid readerId, Guid bookId);
+        Task<bool> RemoveFromReadAsync(Guid readerId, Guid bookId);
         Task<List<BookDto>> GetAllWishedAsync(Guid readerId);
         Task<List<BookDto>> GetAllReadAsync(Guid readerId);
+        Task<bool> IsInReadAsync(Guid readerId, Guid bookId);
+        Task<bool> IsInWishedAsync(Guid readerId, Guid bookId);
+        Task<List<BookDto>> GetRecommendedBooksAsync(Guid readerId);
     }
 }

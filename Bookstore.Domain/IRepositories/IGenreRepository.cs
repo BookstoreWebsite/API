@@ -14,5 +14,6 @@ namespace Bookstore.Domain.IRepositories
         Task CreateAsync(Genre genre);
         Task UpdateAsync(Genre genre);
         Task DeleteAsync(Guid id);
+        Task AddGenresToFavoritesAsync(Guid readerId, List<Genre> genres);
     }
 }
