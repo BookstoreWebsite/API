@@ -19,5 +19,7 @@ namespace Bookstore.Domain.IRepositories
         Task IncrementItemQuantityAsync(Guid itemId);
         Task DecrementItemQuantityAsync(Guid itemId);
         Task RemoveItemAsync(Guid itemId);
+        Task<List<Purchase>> GetPurchaseHistoryAsync(Guid readerId);
+        Task<List<PurchaseItem>> GetPurchaseItemsAsync(Guid purchaseId);
     }
 }

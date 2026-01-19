@@ -1,4 +1,5 @@
 ﻿using Bookstore.Application.DTO;
+using Bookstore.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,7 @@ namespace Bookstore.Application.IService
         Task<bool> IncrementItemQuantityAsync(Guid itemId);
         Task<bool> DecrementItemQuantityAsync(Guid itemId);
         Task<bool> RemoveItemAsync(Guid itemId);
+        Task<List<PurchaseDto>> GetPurchaseHistoryAsync(Guid readerId);
+        Task<List<PurchaseItemDto>> GetPurchaseItemsAsync(Guid purchaseId);
     }
 }

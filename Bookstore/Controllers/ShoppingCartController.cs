@@ -1,5 +1,6 @@
 ﻿using Bookstore.Application.DTO;
 using Bookstore.Application.IService;
+using Bookstore.Domain.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -97,6 +98,20 @@ namespace Bookstore.API.Controllers
             }
 
             return Ok(new { message = "Removed item successfully!" });
+        }
+
+        [HttpGet("getPurchaseHistory/{readerId}")]
+        public async Task<ActionResult<List<PurchaseDto>>> GetPurchaseHistory(Guid readerId) 
+        {
+            var purchaseDtos = await _shoppingCartService.GetPurchaseHistoryAsync(readerId);
+            return Ok(purchaseDtos);
+        }
+
+        [HttpGet("getPurchaseItems/{purchaseId}")]
+        public async Task<ActionResult<List<PurchaseItemDto>>> GetPurchaseItems(Guid purchaseId) 
+        {
+            var purchaseDtos = await _shoppingCartService.GetPurchaseItemsAsync(purchaseId);
+            return Ok(purchaseDtos);
         }
     }
 }

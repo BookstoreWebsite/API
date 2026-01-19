@@ -87,5 +87,42 @@ namespace Bookstore.Application.Service
             await _repository.RemoveItemAsync(itemId);
             return true;
         }
+
+        public async Task<List<PurchaseDto>> GetPurchaseHistoryAsync(Guid readerId) 
+        {
+            var purchases = await _repository.GetPurchaseHistoryAsync(readerId);
+            var purchaseDtos = new List<PurchaseDto>();
+
+            foreach(var purchase in purchases) 
+            {
+                var purchaseDto = new PurchaseDto 
+                {
+                    Id = purchase.Id,
+                    DateTime = purchase.DateTime,
+                    TotalPrice = purchase.TotalPrice
+                };
+                purchaseDtos.Add(purchaseDto);
+            }
+            return purchaseDtos;
+        }
+        public async Task<List<PurchaseItemDto>> GetPurchaseItemsAsync(Guid purchaseId) 
+        {
+            var purchaseItems = await _repository.GetPurchaseItemsAsync(purchaseId);
+            var purchaseItemDtos = new List<PurchaseItemDto>();
+
+            foreach (var purchaseItem in purchaseItems)
+            {
+                var purchaseItemDto = new PurchaseItemDto
+                {
+                    ProductName = purchaseItem.Product.Name,
+                    ImageUrl = purchaseItem.Product.ImageUrl,
+                    Quantity = purchaseItem.Quantity,
+                    UnitPrice = purchaseItem.UnitPrice,
+                    TotalPrice = purchaseItem.UnitPrice * purchaseItem.Quantity
+                };
+                purchaseItemDtos.Add(purchaseItemDto);
+            }
+            return purchaseItemDtos;
+        }
     }
 }

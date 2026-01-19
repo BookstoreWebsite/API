@@ -14,6 +14,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.Net.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 
 
 
@@ -158,6 +159,19 @@ namespace Bookstore.Infrastructure.Repository
             }
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Purchase>> GetPurchaseHistoryAsync(Guid readerId) 
+        {
+            return await _context.Purchases.Where(p => p.ReaderId == readerId).ToListAsync();
+        }
+
+        public async Task<List<PurchaseItem>> GetPurchaseItemsAsync(Guid purchaseId) 
+        {
+            return await _context.PurchaseItems
+                .Include(pi => pi.Product)
+                .Where(pi => pi.PurchaseId == purchaseId)
+                .ToListAsync();
         }
 
         public async Task RemoveItemAsync(Guid itemId) 
