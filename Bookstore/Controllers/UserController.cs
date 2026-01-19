@@ -77,5 +77,21 @@ namespace Bookstore.API.Controllers
             var result = await _service.GetFollowersAsync(id);
             return Ok(result);  
         }
+
+        public class EditBioRequest
+        {
+            public string Text { get; set; } = "";
+        }
+
+        [HttpPatch("editBio/{id}")]
+        public async Task<IActionResult> EditBio(Guid id, [FromBody] EditBioRequest request)
+        {
+            var result = await _service.EditBioAsync(id, request.Text);
+
+            if (!result) return BadRequest();
+
+            return Ok(new { message = "Bio updated successfully" });
+        }
+
     }
 }

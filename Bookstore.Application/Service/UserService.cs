@@ -174,5 +174,13 @@ namespace Bookstore.Application.Service
             }
             return dtos;
         }
+
+        public async Task<bool> EditBioAsync(Guid id, string text) 
+        {
+            var user = await _repository.GetByIdAsync(id);
+            user.ReaderBio = text;
+            await _repository.EditBioAsync(user);
+            return true;
+        }
     }
 }

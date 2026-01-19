@@ -17,5 +17,6 @@ namespace Bookstore.Application.IService
         Task<List<UserDto>> GetBySearchQueryAsync(string query);
         Task<List<FollowDto>> GetFollowingAsync(Guid id);
         Task<List<FollowDto>> GetFollowersAsync(Guid id);
+        Task<bool> EditBioAsync(Guid id, string text);
     }
 }

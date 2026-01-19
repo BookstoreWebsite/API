@@ -90,5 +90,11 @@ namespace Bookstore.Infrastructure.Repository
                 .ToListAsync();
             return followers;
         }
+
+        public async Task EditBioAsync(User user) 
+        {
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }
