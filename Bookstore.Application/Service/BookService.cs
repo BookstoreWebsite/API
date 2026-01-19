@@ -153,7 +153,9 @@ namespace Bookstore.Application.Service
                     Id = review.Id,
                     Title = review.Title,
                     Text = review.Text,
-                    Rating = review.Rating
+                    Rating = review.Rating,
+                    Username = review.Reader.Username,
+                    ProfilePicture = review.Reader.ProfilePictureUrl
                 };
                 reviewDtos.Add(reviewDto);
             }
@@ -339,6 +341,7 @@ namespace Bookstore.Application.Service
                     Author = book.Author,
                     Rating = book.Rating,
                     Price = priceListEntry.Price,
+                    Amount = book.Amount
                 };
 
                 bookDtos.Add(bookDto);
@@ -365,6 +368,7 @@ namespace Bookstore.Application.Service
                     Author = book.Author,
                     Rating = book.Rating,
                     Price = priceListEntry.Price,
+                    Amount = book.Amount,
                 };
 
                 bookDtos.Add(bookDto);
@@ -403,6 +407,7 @@ namespace Bookstore.Application.Service
                     Author = book.Author,
                     Rating = book.Rating,
                     Price = priceListEntry.Price,
+                    Amount = book.Amount
                 };
 
                 bookDtos.Add(bookDto);

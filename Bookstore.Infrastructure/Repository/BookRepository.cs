@@ -110,7 +110,10 @@ namespace Bookstore.Infrastructure.Repository
 
         public async Task<List<Review>> GetAllBookReviewsAsync(Guid bookId)
         {
-            return await _context.Reviews.Where(r => r.BookId == bookId).ToListAsync();
+            return await _context.Reviews
+                .Include(r => r.Reader)
+                .Where(r => r.BookId == bookId)
+                .ToListAsync();
         }
 
         public async Task<Review> GetReviewByIdAsync(Guid reviewId)
