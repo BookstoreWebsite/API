@@ -33,5 +33,8 @@ namespace Bookstore.Application.IService
         Task<bool> IsInReadAsync(Guid readerId, Guid bookId);
         Task<bool> IsInWishedAsync(Guid readerId, Guid bookId);
         Task<List<BookDto>> GetRecommendedBooksAsync(Guid readerId);
+        Task<bool> SubscribeAsync(Guid readerId, Guid bookId);
+        Task<bool> UnsubscribeAsync(Guid readerId, Guid bookId);
+        Task<bool> IsReaderSubscribedAsync(Guid readerId, Guid bookId);
     }
 }

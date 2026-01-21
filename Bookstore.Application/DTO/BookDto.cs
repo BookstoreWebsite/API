@@ -18,5 +18,6 @@ namespace Bookstore.Application.DTO
         public decimal? Price { get; set; }
         public int? Amount { get; set; }
         public DateTime? AddTime { get; set; }
+        public List<GenreDto>? Genres { get; set; }
     }
 }

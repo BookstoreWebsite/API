@@ -236,5 +236,33 @@ namespace Bookstore.API.Controllers
             return Ok(bookDtos);
         }
 
+        [HttpPost("subscribe/{readerId}/{bookId}")]
+        public async Task<IActionResult> Subscribe(Guid readerId, Guid bookId) 
+        {
+            var result = await _service.SubscribeAsync(readerId, bookId);
+            if (!result)
+            {
+                return BadRequest();
+            }
+            return Ok(new { message = "User successully subscribed to book!" });
+        }
+
+        [HttpDelete("unsubscribe/{readerId}/{bookId}")]
+        public async Task<IActionResult> Unsubscribe(Guid readerId, Guid bookId)
+        {
+            var result = await _service.UnsubscribeAsync(readerId, bookId);
+            if (!result)
+            {
+                return BadRequest();
+            }
+            return Ok(new { message = "User successully unsubscribed to book!" });
+        }
+
+        [HttpGet("isReaderSubscribed/{readerId}/{bookId}")]
+        public async Task<ActionResult<bool>> IsReaderSubscribed(Guid readerId, Guid bookId)
+        {
+            var result = await _service.IsReaderSubscribedAsync(readerId, bookId);
+            return Ok(result);
+        }
     }
 }

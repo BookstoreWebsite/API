@@ -15,5 +15,6 @@ namespace Bookstore.Domain.Model
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<User> WishedBy { get; set; } = new List<User>();
         public ICollection<User> ReadBy { get; set; } = new List<User>();
+        public ICollection<User> Subscribers { get; set; } = new List<User>();
     }
 }

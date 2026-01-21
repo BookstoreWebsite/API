@@ -47,7 +47,7 @@ namespace Bookstore.Infrastructure.Repository
                     e.ValidFrom <= date &&
                     (e.ValidTo == null || e.ValidTo > date))
                 .OrderByDescending(e => e.ValidFrom)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
 
             return priceEntry;
         }

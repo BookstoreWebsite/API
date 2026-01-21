@@ -185,6 +185,29 @@ namespace Bookstore.Infrastructure.Data
                 );
 
             modelBuilder.Entity<User>()
+                .HasMany(u => u.Subscriptions)
+                .WithMany(b => b.Subscribers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UserBookSubscriptions",
+                    j => j
+                        .HasOne<Book>()
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j => j
+                        .HasOne<User>()
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("UserId", "BookId");
+                        j.ToTable("UserBookSubscriptions");
+                    }
+                );
+
+
+            modelBuilder.Entity<User>()
                 .HasMany(u => u.FavoriteGenres)
                 .WithMany(g => g.FavoritedBy)
                 .UsingEntity<Dictionary<string, object>>(

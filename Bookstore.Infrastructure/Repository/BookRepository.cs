@@ -1,12 +1,17 @@
 ﻿using Bookstore.Domain.IRepositories;
 using Bookstore.Domain.Model;
 using Bookstore.Infrastructure.Data;
+using MailKit.Security;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using MimeKit.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MailKit.Net.Smtp;
 
 namespace Bookstore.Infrastructure.Repository
 {
@@ -14,11 +19,18 @@ namespace Bookstore.Infrastructure.Repository
     {
         private readonly AppDbContext _context;
         private readonly IUserRepository _userRepository;
-        
-        public BookRepository(AppDbContext context, IUserRepository userRepository) 
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly EmailSettings _emailSettings;
+
+        public BookRepository(AppDbContext context,
+                              IUserRepository userRepository,
+                              IHttpClientFactory httpClientFactory,
+                              IOptions<EmailSettings> emailOptions) 
         {
             _context = context;
             _userRepository = userRepository;
+            _httpClientFactory = httpClientFactory;
+            _emailSettings = emailOptions.Value;
         }
 
         public async Task CreateAsync(Book book, List<Guid> genreIds, decimal? price)
@@ -64,10 +76,13 @@ namespace Bookstore.Infrastructure.Repository
 
         public async Task<Book> GetByIdAsync(Guid id)
         {
-            return await _context.Books.Include(b => b.Genres).FirstOrDefaultAsync(b => b.Id == id);
+            return await _context.Books
+                                 .Include(b => b.Genres)
+                                 .Include(b => b.Subscribers)
+                                 .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public async Task UpdateAsync(Book book, List<Guid> genreIds)
+        public async Task UpdateAsync(Book book, List<Guid> genreIds, bool isBackInStock)
         {
             var genres = await _context.Genres
                     .Where(g => genreIds.Contains(g.Id))
@@ -78,6 +93,9 @@ namespace Bookstore.Infrastructure.Repository
             {
                 book.Genres.Add(genre);
             }
+
+            if(isBackInStock)
+                await NotifySubscribersAsync(book);
 
             _context.Books.Update(book);
             await _context.SaveChangesAsync();
@@ -235,6 +253,18 @@ namespace Bookstore.Infrastructure.Repository
             return user.Read.ToList();
         }
 
+        public async Task<List<Book>> GetAllSubscriptionsAsync(Guid readerId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Subscriptions)
+                .FirstOrDefaultAsync(u => u.Id == readerId);
+
+            if (user == null)
+                return new List<Book>();
+
+            return user.Subscriptions.ToList();
+        }
+
         public async Task<List<Book>> GetRecommendedBooksAsync(Guid readerId) 
         {
             var user = await _userRepository.GetByIdAsync(readerId);
@@ -257,6 +287,65 @@ namespace Bookstore.Infrastructure.Repository
 
             return recommendedBooks;
 
+        }
+
+        public async Task SubscribeAsync(Guid readerId, Guid bookId) 
+        {
+            var book = await GetByIdAsync(bookId);
+            var user = await _userRepository.GetByIdAsync(readerId);
+
+            user.Subscriptions.Add(book);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UnsubscribeAsync(Guid readerId, Guid bookId) 
+        {
+            var book = await GetByIdAsync(bookId);
+            var user = await _userRepository.GetByIdAsync(readerId);
+
+            user.Subscriptions.Remove(book);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task NotifySubscribersAsync(Book book) 
+        {
+            foreach(var subscriber in book.Subscribers) 
+            {
+                await SendBackInStockEmailAsync(book.Id, book, subscriber);
+            }
+        }
+
+        private async Task SendBackInStockEmailAsync(Guid bookId, Book book, User reader)
+        {
+            if (book == null)
+                throw new InvalidOperationException($"Book {bookId} not found.");
+
+            var subject = $"{book.Name} subscription";
+            var bodyText = $"We are pleased to inform you that {book.Name} is back in stock!\nBuy it while it's here!";
+
+            await SendEmailAsync(
+                toEmail: reader.Email,
+                toName: $"{reader.FirstName} {reader.LastName}",
+                subject: subject,
+                bodyText: bodyText
+            );
+        }
+
+        private async Task SendEmailAsync(string toEmail, string toName, string subject, string bodyText)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.FromEmail));
+            message.To.Add(new MailboxAddress(toName, toEmail));
+            message.Subject = subject;
+
+            message.Body = new TextPart(TextFormat.Plain) { Text = bodyText };
+
+            using var smtp = new SmtpClient();
+
+            await smtp.ConnectAsync(_emailSettings.SmtpHost, _emailSettings.SmtpPort, SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_emailSettings.SmtpUser, _emailSettings.SmtpPass);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
         }
 
     }

@@ -81,6 +81,7 @@ namespace Bookstore.Application.Service
         {
             var book = await _repository.GetByIdAsync(id);
             var priceListEntry = await _productRepository.GetCurrentPriceListEntryAsync(book.Id);
+            var genreDtos = ConvertGenresToDtos(book.Genres);
 
             var bookDto = new BookDto
             {
@@ -91,7 +92,8 @@ namespace Bookstore.Application.Service
                 Author = book.Author,
                 Rating = book.Rating,
                 Amount = (int)book.Amount,
-                Price = priceListEntry.Price
+                Price = priceListEntry.Price,
+                Genres = genreDtos
             };
 
             return bookDto;
@@ -100,6 +102,8 @@ namespace Bookstore.Application.Service
         public async Task<bool> UpdateAsync(Guid id, BookDto bookDto, List<Guid> genreIds)
         {
             var oldBook = await _repository.GetByIdAsync(id);
+            var oldBookPriceListEntry = await _productRepository.GetCurrentPriceListEntryAsync(oldBook.Id);
+            bool isBookInStock = oldBook.Amount == 0 && bookDto.Amount > 0;
 
             oldBook.Name = bookDto.Name;
             oldBook.Description = bookDto.Description;
@@ -108,12 +112,12 @@ namespace Bookstore.Application.Service
             oldBook.Rating = bookDto.Rating;
             oldBook.Amount = (int)bookDto.Amount;
 
-            if(bookDto.Price != null) 
+            if(bookDto.Price != null && oldBookPriceListEntry.Price != bookDto.Price) 
             {
                 await _productRepository.AddNewPriceListEntryAsync(id, (decimal)bookDto.Price);
             }
 
-            await _repository.UpdateAsync(oldBook, genreIds);
+            await _repository.UpdateAsync(oldBook, genreIds, isBookInStock);
             return true;
         }
 
@@ -415,5 +419,37 @@ namespace Bookstore.Application.Service
             return bookDtos;
         }
 
+        public async Task<bool> SubscribeAsync(Guid readerId, Guid bookId) 
+        {
+            await _repository.SubscribeAsync(readerId, bookId);
+            return true;
+        }
+
+        public async Task<bool> UnsubscribeAsync(Guid readerId, Guid bookId)
+        {
+            await _repository.UnsubscribeAsync(readerId, bookId);
+            return true;
+        }
+
+        public async Task<bool> IsReaderSubscribedAsync(Guid readerId, Guid bookId)
+        {
+            var subscriptions = await _repository.GetAllSubscriptionsAsync(readerId);
+            return subscriptions.Any(b => b.Id == bookId);
+        }
+
+        private List<GenreDto> ConvertGenresToDtos(ICollection<Genre> genres)
+        {
+            var dtos = new List<GenreDto>();
+            foreach (var genre in genres)
+            {
+                var dto = new GenreDto
+                {
+                    Id = genre.Id,
+                    Name = genre.Name
+                };
+                dtos.Add(dto);
+            }
+            return dtos;
+        }
     }
 }
