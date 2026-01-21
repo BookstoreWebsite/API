@@ -77,6 +77,7 @@ namespace Bookstore.Infrastructure.Data
                 entity.Property(p => p.Description).IsRequired().HasMaxLength(1000);
                 entity.Property(p => p.ImageUrl).IsRequired();
                 entity.Property(p => p.Amount).IsRequired();
+                entity.Property(b => b.AddTime);
 
                 entity.HasDiscriminator<string>("ProductType")
                       .HasValue<Book>("Book");
@@ -86,7 +87,6 @@ namespace Bookstore.Infrastructure.Data
             {
                 entity.Property(b => b.Author).IsRequired().HasMaxLength(100);
                 entity.Property(b => b.Rating);
-                entity.Property(b => b.AddTime);
             });
 
             modelBuilder.Entity<PriceListEntry>(entity =>

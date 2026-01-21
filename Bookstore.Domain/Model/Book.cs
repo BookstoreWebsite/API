@@ -10,7 +10,6 @@ namespace Bookstore.Domain.Model
     {
         public string Author { get; set; }
         public double? Rating { get; set; }
-        public DateTime AddTime { get; set; }
         public ICollection<Genre> Genres { get; set; } = new List<Genre>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
