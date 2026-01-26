@@ -136,7 +136,9 @@ namespace Bookstore.Infrastructure.Repository
 
         public async Task<Review> GetReviewByIdAsync(Guid reviewId)
         {
-            return await _context.Reviews.FindAsync(reviewId);
+            return await _context.Reviews
+                                 .Include(r => r.Reader)
+                                 .FirstOrDefaultAsync(r => r.Id == reviewId);
         }
 
         public async Task CreateCommentAsync(Comment comment) 
@@ -189,7 +191,10 @@ namespace Bookstore.Infrastructure.Repository
 
         public async Task<List<Report>> GetAllReportsAsync() 
         {
-            var reports = await _context.Reports.ToListAsync();
+            var reports = await _context.Reports
+                                        .Include(r => r.Review)
+                                        .Include(r => r.Comment)
+                                        .ToListAsync();
             return reports;
         }
 
@@ -347,6 +352,5 @@ namespace Bookstore.Infrastructure.Repository
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
         }
-
     }
 }

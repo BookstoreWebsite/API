@@ -15,5 +15,6 @@ namespace Bookstore.Application.DTO
         public Guid? ReviewId { get; set; }
         public Guid? CommentId { get; set; }
         public bool? IsReviewReport { get; set; }
+        public string? BookTitle { get; set; }
     }
 }

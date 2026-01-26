@@ -21,5 +21,6 @@ namespace Bookstore.Domain.Model
         public ICollection<Comment> Replies { get; set; } = new List<Comment>();
         public bool HasReplies { get; set; }
         public ICollection<Report> Reports { get; set; } = new List<Report>();
+        public bool IsRemoved { get; set; }
     }
 }

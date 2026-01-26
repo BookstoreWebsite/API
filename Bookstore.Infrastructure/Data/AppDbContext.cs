@@ -363,6 +363,9 @@ namespace Bookstore.Infrastructure.Data
                 entity.Property(c => c.HasReplies)
                       .IsRequired();
 
+                entity.Property(c => c.IsRemoved)
+                      .IsRequired();
+
                 entity.HasOne(c => c.Reader)
                       .WithMany(u => u.Comments)
                       .HasForeignKey(c => c.ReaderId)

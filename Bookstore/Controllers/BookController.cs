@@ -101,7 +101,7 @@ namespace Bookstore.API.Controllers
             return Ok(reviewDtos);
         }
 
-        [HttpGet("getReviewById/{id}")]
+        [HttpGet("getReviewById/{reviewId}")]
         public async Task<ActionResult<BookDto>> GetReviewById(Guid reviewId)
         {
             var reviewDto = await _service.GetReviewByIdAsync(reviewId);

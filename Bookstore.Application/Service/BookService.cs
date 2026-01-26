@@ -174,8 +174,11 @@ namespace Bookstore.Application.Service
                 Id = review.Id,
                 Title = review.Title,
                 Text = review.Text,
-                Rating = review.Rating
+                Rating = review.Rating,
+                Username = review.Reader.Username,
+                ProfilePicture = review.Reader.ProfilePictureUrl
             };
+
             return reviewDto;
         }
 
@@ -224,6 +227,11 @@ namespace Bookstore.Application.Service
                     ProfilePicture = comment.Reader.ProfilePictureUrl,
                     HasReplies = comment.HasReplies
                 };
+                if (comment.IsRemoved) 
+                {
+                    commentDto.Username = "[removed]";
+                    commentDto.ProfilePicture = "";
+                }
                 commentDtos.Add(commentDto);
             }
 
@@ -245,6 +253,11 @@ namespace Bookstore.Application.Service
                     ProfilePicture = comment.Reader.ProfilePictureUrl,
                     HasReplies = comment.HasReplies
                 };
+                if (comment.IsRemoved)
+                {
+                    commentDto.Username = "[removed]";
+                    commentDto.ProfilePicture = "";
+                }
                 commentDtos.Add(commentDto);
             }
 
@@ -287,6 +300,15 @@ namespace Bookstore.Application.Service
 
             foreach(var report in reports) 
             {
+                var book = new Book();
+                if(report.ReviewId != null) 
+                {
+                    book = await _repository.GetByIdAsync(report.Review.BookId);
+                }
+                else 
+                {
+                    book = await _repository.GetByIdAsync(report.Comment.BookId);
+                }
                 var reportDto = new ReportDto
                 {
                     Id = report.Id,
@@ -295,6 +317,7 @@ namespace Bookstore.Application.Service
                     ReaderId = report.ReaderId,
                     ReviewId = report.ReviewId,
                     CommentId = report.CommentId,
+                    BookTitle = book.Name
                 };
                 reportDtos.Add(reportDto);
             }
